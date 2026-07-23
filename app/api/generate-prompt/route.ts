@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 
+// Agnes AI 配置（兼容 OpenAI 格式）
 const client = new OpenAI({
-  apiKey: process.env.SILICONFLOW_API_KEY,
-  baseURL: 'https://api.siliconflow.cn/v1/',
+  apiKey: process.env.AGNES_API_KEY || process.env.SILICONFLOW_API_KEY,
+  baseURL: process.env.AGNES_API_BASE_URL || 'https://apihub.agnes-ai.com/v1/',
 });
+
+const AGNES_MODEL = process.env.AGNES_MODEL || 'agnes-2.5-flash';
 
 const systemPrompt = `You are an AI artist skilled in creating vivid and detailed image descriptions. Your task is to generate an optimized English prompt for Stable Diffusion based on the user's description. Please follow these guidelines:
 
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
     const { userDescription } = await req.json();
 
     const response = await client.chat.completions.create({
-      model: 'deepseek-ai/DeepSeek-V3',
+      model: AGNES_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userDescription }

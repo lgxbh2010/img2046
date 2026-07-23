@@ -70,9 +70,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/image-tools-icon.svg" />
         <link rel="canonical" href="https://www.img2046.com/" />
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-FRKGZTH854"
+        {/* Google Analytics - 请替换为你自己的 GA 跟踪 ID */}
+        {/* <Script
+          src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -80,10 +80,9 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
-            gtag('config', 'G-FRKGZTH854');
+            gtag('config', 'YOUR_GA_ID');
           `}
-        </Script>
+        </Script> */}
         {/* 结构化数据 */}
         <Script id="structured-data" type="application/ld+json">
           {`

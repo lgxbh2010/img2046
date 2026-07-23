@@ -1,38 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
-const FLUX_API_URL = 'https://api.siliconflow.cn/v1/images/generations';
-const MODELS = [
-  "Kwai-Kolors/Kolors",  // 优先使用 Kolors 模型
-  "black-forest-labs/FLUX.1-schnell",
-  "stabilityai/stable-diffusion-xl-base-1.0"
-];
-let modelIndex = 0;
+// Agnes AI 配置
+const AGNES_API_URL = process.env.AGNES_API_BASE_URL || 'https://apihub.agnes-ai.com/v1';
+const AGNES_MODEL = process.env.AGNES_MODEL || 'agnes-2.5-flash';
 
 async function makeRequest(prompt: string, retries = 3) {
   try {
-    // 始终优先使用 Kolors 模型，只有在失败时才切换到其他模型
-    const model = retries === 3 ? MODELS[0] : MODELS[modelIndex];
-    if (retries < 3) {
-      modelIndex = (modelIndex + 1) % MODELS.length; // Update modelIndex for fallback
-    }
-
-    const response = await axios.post(FLUX_API_URL, {
-      model,
+    const response = await axios.post(`${AGNES_API_URL}/images/generations`, {
+      model: AGNES_MODEL,
       prompt,
       image_size: "1024x1024",
     }, {
       headers: {
-        'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`,
+        'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY || process.env.AGNES_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      timeout: 180000 // 增加到 3 分钟的超时时间，以适应可能的长时间处理
+      timeout: 180000
     });
-    return response.data.data; // 假设返回的图片数据在 data 字段中
+    return response.data.data;
   } catch (error) {
     if (retries > 0) {
       console.log(`Retrying... (${retries} attempts left)`);
-      await new Promise(resolve => setTimeout(resolve, 5000)); // 添加 5 秒延迟before重试
+      await new Promise(resolve => setTimeout(resolve, 5000));
       return makeRequest(prompt, retries - 1);
     }
     throw error;
@@ -60,9 +50,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await axios.get(`${FLUX_API_URL}/tasks/${taskId}`, {
+    const response = await axios.get(`${AGNES_API_URL}/tasks/${taskId}`, {
       headers: {
-        'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`,
+        'Authorization': `Bearer ${process.env.AGNES_API_KEY || process.env.SILICONFLOW_API_KEY}`,
       }
     });
     return NextResponse.json(response.data);
