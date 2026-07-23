@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 
 const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: 'https://api.deepseek.com',
+  apiKey: process.env.AGNES_API_KEY || process.env.DEEPSEEK_API_KEY,
+  baseURL: process.env.AGNES_API_BASE_URL || 'https://api.deepseek.com',
 });
 
 
